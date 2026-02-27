@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_Active__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicates whether this brand is active and should be available in the Experience (LWR) site. Inactive brands are hidden from customer-facing pages and configuration selectors.</description>
+    <inlineHelpText>Check to make this brand available in the Experience site. Uncheck to deactivate the brand (it will be hidden from customer ordering and brand selection).</inlineHelpText>
+    <label>Active</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_Support_Email__c</fullName>
+    <description>Support contact email for this brand. Used for customer communications and support routing (e.g., order confirmation footer, “contact us”).</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter the brand’s support email address (example: support@donut-king.com). Leave blank to use the default support email.</inlineHelpText>
+    <label>Support Email</label>
+    <required>false</required>
+    <type>Email</type>
+    <unique>false</unique>
+</CustomField>

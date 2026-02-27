@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Customer_Name__c</fullName>
+    <description>Customer’s display name for this order (used for pickup identification and order communications). May differ from the Contact name if the order was placed as a guest.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter the name the customer wants associated with this order for pickup. For guest checkout, enter the name provided during checkout.</inlineHelpText>
+    <label>Customer Name</label>
+    <length>255</length>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

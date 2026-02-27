@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Provider__c</fullName>
+    <description>Payment gateway/provider used to process payment for this order. Used for reconciliation, reporting, and support troubleshooting.</description>
+    <inlineHelpText>Select the provider that processed the customer’s payment (e.g., Stripe, Square). Leave blank for unpaid/draft orders; the field can be required at “Paid” status via validation.</inlineHelpText>
+    <label>Payment Provider</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Stripe</fullName>
+                <default>false</default>
+                <label>Stripe</label>
+            </value>
+            <value>
+                <fullName>Square</fullName>
+                <default>false</default>
+                <label>Square</label>
+            </value>
+            <value>
+                <fullName>PayPal</fullName>
+                <default>false</default>
+                <label>PayPal</label>
+            </value>
+            <value>
+                <fullName>Authorize.Net</fullName>
+                <default>false</default>
+                <label>Authorize.Net</label>
+            </value>
+            <value>
+                <fullName>Braintree</fullName>
+                <default>false</default>
+                <label>Braintree</label>
+            </value>
+            <value>
+                <fullName>Adyen</fullName>
+                <default>false</default>
+                <label>Adyen</label>
+            </value>
+            <value>
+                <fullName>Shopify Payments</fullName>
+                <default>false</default>
+                <label>Shopify Payments</label>
+            </value>
+            <value>
+                <fullName>Manual / Cash</fullName>
+                <default>false</default>
+                <label>Manual / Cash</label>
+            </value>
+            <value>
+                <fullName>No Charge</fullName>
+                <default>false</default>
+                <label>No Charge</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

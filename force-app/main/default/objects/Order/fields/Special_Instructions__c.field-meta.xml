@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Special_Instructions__c</fullName>
+    <description>Free-form notes provided by the customer or staff for this order (e.g., allergy notes, substitutions, pickup preferences). For operational use only.</description>
+    <inlineHelpText>Enter any special instructions for preparing or handing off this order (e.g., allergies, no nuts, writing on box). Do not include sensitive personal information.</inlineHelpText>
+    <label>Special Instructions</label>
+    <length>32768</length>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

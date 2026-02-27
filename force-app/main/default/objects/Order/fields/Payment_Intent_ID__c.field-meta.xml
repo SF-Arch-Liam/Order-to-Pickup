@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Intent_ID__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description>Stores the payment provider’s transaction reference (e.g., Stripe PaymentIntent Id) associated with this Order. Used for reconciliation, refunds, disputes, and support.</description>
+    <externalId>true</externalId>
+    <inlineHelpText>Populated by the payment integration after a payment session is created or confirmed. Used to locate the payment in the provider’s dashboard and to match webhook events back to this Order.</inlineHelpText>
+    <label>Payment Intent ID</label>
+    <length>255</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

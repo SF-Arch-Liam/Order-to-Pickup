@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Transaction_ID__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description>Final payment transaction/charge identifier returned by the payment provider after successful payment capture. Used for reconciliation, refunds, and support lookups.</description>
+    <externalId>true</externalId>
+    <inlineHelpText>Populated by the payment integration when payment succeeds. This is the provider’s final transaction/charge ID (not the Payment Intent). Use it to locate the charge/refund in the provider dashboard.</inlineHelpText>
+    <label>Transaction ID</label>
+    <length>255</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

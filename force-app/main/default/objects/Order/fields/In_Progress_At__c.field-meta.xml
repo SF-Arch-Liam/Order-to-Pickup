@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>In_Progress_At__c</fullName>
+    <description>Date/time when the order began preparation (moved to In Progress). Used to measure queue time and fulfillment cycle time.</description>
+    <inlineHelpText>Automatically set when the order status changes to In Progress. Used for operational timing and reporting.</inlineHelpText>
+    <label>In Progress At</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>DateTime</type>
+</CustomField>

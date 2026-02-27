@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Brand__c</fullName>
+    <description>Denormalized Brand value derived from the selected Store’s Brand. Used for consistent reporting, filtering, and display without manual entry.</description>
+    <externalId>false</externalId>
+    <formula>IF(
+  ISBLANK(Store__c),
+  &quot;&quot;,
+  Store__r.O2P_Business_Brand__r.Name
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Auto-calculated from the Store. To change the Brand, update the Store selection (or the Store’s Brand). This field can’t be edited manually.</inlineHelpText>
+    <label>Brand</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

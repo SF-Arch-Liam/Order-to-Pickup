@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_Primary_Color__c</fullName>
+    <description>Primary brand color used for theming in the Experience (LWR) site. Store as a hex value (e.g., #RRGGBB or #RRGGBBAA).</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter a hex color code starting with “#”. Example: #FFAA00 (RGB) or #FFAA00CC (RGBA). Leave blank to use the default theme color.</inlineHelpText>
+    <label>Primary Color</label>
+    <length>9</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

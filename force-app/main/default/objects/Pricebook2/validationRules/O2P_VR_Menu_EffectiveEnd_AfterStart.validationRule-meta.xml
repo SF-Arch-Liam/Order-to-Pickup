@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_VR_Menu_EffectiveEnd_AfterStart</fullName>
+    <active>true</active>
+    <description>Effective End must be on or after Effective Start.</description>
+    <errorConditionFormula>AND(
+  NOT(ISBLANK(O2P_Effective_End__c)),
+  O2P_Effective_End__c &lt; O2P_Effective_Start__c
+)</errorConditionFormula>
+    <errorDisplayField>O2P_Effective_End__c</errorDisplayField>
+    <errorMessage>Effective End must be on or after Effective Start.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_Business_Brand__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>Associates this Price Book (menu) to a Business Brand for multi-brand menu management and routing.</description>
+    <inlineHelpText>Select the Business Brand that owns this menu (Price Book). This is required to ensure menus are partitioned correctly by brand.</inlineHelpText>
+    <label>Business Brand</label>
+    <referenceTo>BusinessBrand</referenceTo>
+    <relationshipLabel>Price Books</relationshipLabel>
+    <relationshipName>Price_Books</relationshipName>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

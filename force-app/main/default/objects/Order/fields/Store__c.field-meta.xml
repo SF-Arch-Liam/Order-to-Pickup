@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Store__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>Primary store location responsible for preparing and fulfilling this order. Used for routing, reporting, and brand derivation.</description>
+    <inlineHelpText>Select the store that will fulfill this order. Brand and store-level reporting are driven from this selection.</inlineHelpText>
+    <label>Store</label>
+    <referenceTo>Location</referenceTo>
+    <relationshipLabel>Orders</relationshipLabel>
+    <relationshipName>Orders</relationshipName>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

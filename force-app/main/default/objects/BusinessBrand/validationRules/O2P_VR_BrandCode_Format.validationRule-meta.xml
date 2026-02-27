@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_VR_BrandCode_Format</fullName>
+    <active>true</active>
+    <description>Enforce uppercase alphanumeric + underscore only.</description>
+    <errorConditionFormula>AND(
+NOT(ISBLANK(O2P_Brand_Code__c)),
+NOT(REGEX(O2P_Brand_Code__c, &quot;^[A-Z0-9_]+$&quot;))
+)</errorConditionFormula>
+    <errorDisplayField>O2P_Brand_Code__c</errorDisplayField>
+    <errorMessage>Brand Code must use only uppercase letters, numbers, and underscores (example: DONUT_KING). No spaces or hyphens.</errorMessage>
+</ValidationRule>

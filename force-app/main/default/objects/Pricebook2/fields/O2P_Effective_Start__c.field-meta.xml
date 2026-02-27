@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_Effective_Start__c</fullName>
+    <description>Start date when this menu (Price Book) becomes effective for customer ordering. Used to determine the active menu for a brand.</description>
+    <inlineHelpText>Enter the date this menu should start being used. The system selects the brand’s active menu based on today’s date between Effective Start and Effective End.</inlineHelpText>
+    <label>Effective Start</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

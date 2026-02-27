@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Customer_Phone__c</fullName>
+    <description>Customer phone number used for pickup coordination and order-related communication. For guest checkout, this is the phone provided at checkout.</description>
+    <inlineHelpText>Enter the best phone number to reach the customer about this order (pickup questions, delays, or changes).</inlineHelpText>
+    <label>Customer Phone</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Phone</type>
+</CustomField>

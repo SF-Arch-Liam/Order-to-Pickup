@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pickup_Date_Time__c</fullName>
+    <description>Scheduled date and time when the customer will pick up the order from the selected Store. Used for fulfillment planning, notifications, and operational reporting.</description>
+    <inlineHelpText>Select the date and time the customer will pick up this order. Use the Store’s local time. If rescheduled, update this field.</inlineHelpText>
+    <label>Pickup Date/Time</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <type>DateTime</type>
+</CustomField>

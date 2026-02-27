@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_Domain_Slug__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description>URL-friendly brand identifier used for Experience Cloud routing and theming (e.g., /b/donut-king/menu). Must be lowercase letters/numbers with single hyphens only.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter a unique URL slug in lowercase using letters/numbers and hyphens only. No spaces, underscores, or trailing hyphens. Example: donut-king.</inlineHelpText>
+    <label>Domain Slug</label>
+    <length>80</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

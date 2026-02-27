@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>O2P_VR_PrimaryColor_HexFormat</fullName>
+    <active>true</active>
+    <description>Primary Color must be a hex value like #RRGGBB or #RRGGBBAA.</description>
+    <errorConditionFormula>AND(
+NOT(ISBLANK(O2P_Primary_Color__c)),
+NOT(REGEX(O2P_Primary_Color__c, &quot;^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$&quot;))
+)</errorConditionFormula>
+    <errorDisplayField>O2P_Primary_Color__c</errorDisplayField>
+    <errorMessage>Primary Color must be a hex value like #RRGGBB or #RRGGBBAA.</errorMessage>
+</ValidationRule>
