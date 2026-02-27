@@ -1,0 +1,125 @@
+---
+title: Order-to-Pickup Architecture
+description: Architecture and access design for the LWR Experience Cloud ordering site.
+---
+
+# Order-to-Pickup Architecture
+
+LWR Experience Cloud ordering site for a donut brand with 4 stores. Guests can browse and place pickup orders; store staff manage fulfillment.
+
+## Personas & Licensing
+
+- **Customer (guest)**: public/anonymous; no license; can browse menu and place orders.
+- **Counter Staff (auth)**: Customer Community+ (4 named users for initial rollout); store-scoped access to orders.
+- **Admin/Dev**: 1 internal Salesforce license for configuration and deployments.
+- **Future multi-brand scaling**: add additional Community+ users per brand as needed; each brand can have its own LWR site with brand-scoped guest profile and store-scoped sharing for that brand’s staff.
+
+## Data Model (retrieved metadata)
+
+- **BusinessBrand**
+  - Brand code `O2P_Brand_Code__c` (unique, external ID), domain slug `O2P_Domain_Slug__c` (unique), active flag `O2P_Active__c`, theme fields (`O2P_Primary_Color__c`, logo/support fields).
+- **Pricebook2** (menu)
+  - Lookup to BusinessBrand `O2P_Business_Brand__c` (required).
+  - Effective dates `O2P_Effective_Start__c`, `O2P_Effective_End__c`.
+- **Product2**
+  - Menu sort `O2P_Display_Order__c`; priced via `PricebookEntry`.
+- **PricebookEntry**
+  - Standard pricing rows tied to Product2 and Pricebook2.
+- **Location** (standard)
+  - Used as Store; Order lookup points here.
+- **Order** (standard)
+  - Store lookup `Store__c` (to Location); derived brand formula `Brand__c`.
+  - Customer details `Customer_Name__c` (required), `Customer_Email__c`, `Customer_Phone__c`, `Special_Instructions__c`.
+  - Pickup scheduling `Pickup_Date_Time__c` (required); lifecycle stamps `Placed_At__c`, `In_Progress_At__c`, `Ready_At__c`, `Picked_Up_At__c`.
+  - Payments: provider picklist `Payment_Provider__c`, payment state picklist `Payment_Status__c`, external ID `Payment_Intent_ID__c` (unique).
+- **OrderItem**
+  - Standard relationship to Order and PricebookEntry/Product2; no custom fields.
+
+## Key Relationships
+
+```mermaid
+graph TD
+  BusinessBrand["BusinessBrand"] -->|1..M| Pricebook2["Pricebook2 (Menu)"]
+  BusinessBrand -->|1..M| Location["Location (Store)"]
+  Pricebook2 -->|1..M| PricebookEntry["PricebookEntry"]
+  Product2["Product2"] -->|1..M| PricebookEntry
+  Location -->|1..M| Order["Order"]
+  BusinessBrand -->|1..M| Order
+  Order -->|1..M| OrderItem["OrderItem"]
+  OrderItem --> Product2
+  OrderItem --> PricebookEntry
+```
+
+## Access & Sharing Design
+
+- **Guest (customer)**
+  - Object perms: create/read Order, OrderItem; read Product2, Pricebook2, PricebookEntry, BusinessBrand, Location.
+  - Field perms: allow customer fields and pickup datetime; restrict payment provider/status to read-only or hidden for guests; keep Payment Intent ID system-set.
+  - Sharing: guest uses site guest user; orders created by guest owned by integration/user; rely on sharing rule that grants guest read on their newly created records (manual share or sharing set via contactless approach using Apex after insert).
+  - Data visibility: no access to other orders beyond confirmation page; store lists hidden.
+
+- **Counter Staff (Community+)**
+  - Object perms: read/update Orders in their store; update statuses and lifecycle timestamps; read related OrderItems/products; no admin on brands/price books.
+  - Store scoping: create `User.Store__c` (lookup to Location) or a junction `Store_Access__c` between User and Location. Apex sharing on Order and OrderItem where `Store__c` matches an assigned store. Optionally add criteria-based sharing if a single store per user (`Store__c = $User.Store__c`).
+  - Roles: place staff in partner roles for basic role-based sharing; supplement with Apex sharing for store match.
+  - Auditing: require login per staff; field history not enabled; rely on field updates + `LastModifiedById`.
+
+- **Admin**
+  - Full access; manages menus, brands, and deployments.
+
+## Flows / Processes
+
+- **Guest order creation**
+  1. Guest selects Store (Location) and sees menu from brand-linked active Pricebook2 (effective date window).
+  2. Adds Product2 items; cart uses PricebookEntry for price.
+  3. Checkout captures `Customer_Name__c`, contact info, `Pickup_Date_Time__c`, `Special_Instructions__c`.
+  4. System sets Order status `New`, stamps `Placed_At__c`, derives `Brand__c` from Store.
+  5. Creates OrderItems tied to the chosen PricebookEntry.
+  6. Returns confirmation with order number; do not expose other orders.
+
+- **Staff fulfillment**
+  1. Staff dashboard lists Orders where `Store__c` matches their store; default sort by `Pickup_Date_Time__c`.
+  2. Status transitions: `New → In Progress → Ready → Picked Up` (optionally `Canceled`).
+  3. When status changes, stamp lifecycle times:
+     - In Progress: set `In_Progress_At__c`
+     - Ready: set `Ready_At__c`
+     - Picked Up: set `Picked_Up_At__c`
+  4. Optionally send notifications on Ready and reminders near pickup time.
+
+## LWR UI Surfaces
+
+- **Public (guest)**
+  - Home/Menu page: select Store; display products sorted by `O2P_Display_Order__c`, filtered to active Pricebook2 for the store’s brand.
+  - Product detail/add-to-cart; cart drawer/page showing line items and totals.
+  - Checkout: capture customer info, pickup datetime; summary + place order.
+  - Confirmation: order number, store info, pickup time.
+
+- **Authenticated staff**
+  - Orders list: filter by status/pickup window; scoped to user’s store; sortable by `Pickup_Date_Time__c`.
+  - Order detail: items, customer contact, special instructions, timestamps; buttons for status progression.
+  - Optional ready-for-pickup quick actions and search by order number.
+
+## Payment Handling Plan
+
+- Use `Payment_Provider__c` picklist and `Payment_Intent_ID__c` (unique external ID) for reconciliation.
+- `Payment_Status__c` drives fulfillment eligibility; fulfillment proceeds only when `Paid` (or `Authorized` if delayed capture).
+- For guest checkout with external gateway:
+  - Create Order in `Pending` with intent ID when payment session starts.
+  - Update to `Authorized/Paid` via webhook/async callback; set `Payment_Provider__c` and maintain idempotency using `Payment_Intent_ID__c`.
+  - Prevent duplicate orders via uniqueness on intent ID and a small holding window.
+- If supporting cash/manual, allow `Manual / Cash` provider and set status accordingly.
+
+## Deployment & Org Setup
+
+1. Create the Experience Cloud LWR site; enable guest user; assign a site guest profile with object/field perms above.
+2. Create Customer Community+ users (one per staff) and assign permission set(s) for order read/update and store-scoped Apex sharing.
+3. Add custom user-store field or junction; deploy Apex sharing logic (Order/OrderItem) based on Store assignments.
+4. Publish site; expose public pages for menu/cart/checkout; protect staff pages with authentication.
+5. Load seed data: BusinessBrand records, Pricebook2 with effective dates, Products, PricebookEntries, Locations (stores).
+6. Validate payments integration (webhook user/perm set) and status transitions in a sandbox; then deploy to production via `sfdx force:source:deploy -p force-app`.
+7. **Scaling to more brands/sites**: for each new brand, spin up an additional LWR site (optional), clone guest/staff permission sets with brand-specific filters, assign new Community+ users for that brand, and ensure Apex sharing filters by both Store and Brand.
+
+## References
+
+- Current metadata paths: `force-app/main/default/objects/` (BusinessBrand, Pricebook2, Product2, Order, OrderItem, PricebookEntry, Location).
+- Provided ERD image: `/assets/image-58fd0bf0-99a1-4068-bc47-9654d4d8fcd2.png`.
