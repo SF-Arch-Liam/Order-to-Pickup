@@ -99,6 +99,36 @@ graph TD
   - Order detail: items, customer contact, special instructions, timestamps; buttons for status progression.
   - Optional ready-for-pickup quick actions and search by order number.
 
+## LWC Component Architecture (single site)
+
+**Shared primitives**
+- `o2p_storeSelector`: lists Stores (Location) scoped to brand; emits selected store.
+- `o2p_menuGrid`: displays products (Product2) with prices (PricebookEntry), sorted by `O2P_Display_Order__c`; listens to store/pricebook context.
+- `o2p_productCard`: child for product tile; add-to-cart events.
+- `o2p_cartPanel`: shows cart lines, totals, edit/remove; persists in browser storage for guest flow.
+- `o2p_checkoutForm`: captures customer info, `Pickup_Date_Time__c`, `Special_Instructions__c`; submits Order + OrderItems via Apex/REST; sets status New and `Placed_At__c`.
+- `o2p_orderSummary`: confirmation view with order number, store, pickup time.
+- `o2p_statusPill`: renders Order status consistently across views.
+
+**Guest pages (public)**
+- `o2p_publicShell`: lightweight layout without login/account UI; includes `o2p_storeSelector`, `o2p_menuGrid`, `o2p_cartPanel`.
+- `o2p_checkoutPage`: uses `o2p_checkoutForm` + `o2p_orderSummary` on success.
+
+**Staff pages (requires login)**
+- `o2p_staffShell`: layout for authenticated users; hides customer cart; includes filters.
+- `o2p_orderList`: table/list of Orders for user’s store(s); filters by status and pickup window; columns include status pill, pickup time, customer name, total, store.
+- `o2p_orderRowActions`: status progression buttons (New→In Progress→Ready→Picked Up), stamps lifecycle fields.
+- `o2p_orderDetail`: shows items, contact, special instructions, payment status/provider; allows status updates.
+- `o2p_pickupTimeFilter`: quick filters for “next 30/60/120 minutes” based on `Pickup_Date_Time__c`.
+
+**Data/access considerations**
+- Use `@salesforce/user/isGuest` to hide staff controls in shared components.
+- Apex services:
+  - `MenuService.getMenu(pricebookId|storeId)`: returns products + prices with effective Pricebook2.
+  - `OrderService.createOrder(payload)`: creates Order + OrderItems, sets status New, `Placed_At__c`, derives `Brand__c`.
+  - `OrderService.updateStatus(orderId, newStatus)`: enforces allowed transitions and stamps `In_Progress_At__c`, `Ready_At__c`, `Picked_Up_At__c`.
+  - `OrderService.listOrders(storeId, filters)`: staff-scoped query by store and status/pickup window.
+- Guard payment fields: only exposed to staff/internal; guest UI should not render payment provider/status.
 ## Payment Handling Plan
 
 - Use `Payment_Provider__c` picklist and `Payment_Intent_ID__c` (unique external ID) for reconciliation.
