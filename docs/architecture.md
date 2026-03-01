@@ -69,13 +69,21 @@ graph TD
 
 ## Flows / Processes
 
-- **Guest order creation**
+- **Guest order creation (aligned with payments)**
   1. Guest selects Store (Location) and sees menu from brand-linked active Pricebook2 (effective date window).
   2. Adds Product2 items; cart uses PricebookEntry for price.
   3. Checkout captures `Customer_Name__c`, contact info, `Pickup_Date_Time__c`, `Special_Instructions__c`.
-  4. System sets Order status `New`, stamps `Placed_At__c`, derives `Brand__c` from Store.
-  5. Creates OrderItems tied to the chosen PricebookEntry.
-  6. Returns confirmation with order number; do not expose other orders.
+  4. When the payment session is created, create an Order with:
+     - Order status: `Pending Payment` (or `Draft` if you prefer) — do not enter the fulfillment flow yet.
+     - `Payment_Status__c`: `Pending`.
+     - `Payment_Intent_ID__c`: set to the gateway intent/session id for idempotency.
+     - `Brand__c`: derived from `Store__c`.
+     - OrderItems tied to the chosen PricebookEntry.
+  5. On payment success/authorization (gateway redirect or webhook):
+     - Set Order status to `New`.
+     - Stamp `Placed_At__c`.
+     - Set `Payment_Status__c` to `Paid` (or `Authorized` if delayed capture); set `Payment_Provider__c`.
+  6. On payment failure/expiration: set `Payment_Status__c` to `Failed` (or `Canceled`) and optionally cancel/void the Order.
 
 - **Staff fulfillment**
   1. Staff dashboard lists Orders where `Store__c` matches their store; default sort by `Pickup_Date_Time__c`.
@@ -106,7 +114,7 @@ graph TD
 - `o2p_menuGrid`: displays products (Product2) with prices (PricebookEntry), sorted by `O2P_Display_Order__c`; listens to store/pricebook context.
 - `o2p_productCard`: child for product tile; add-to-cart events.
 - `o2p_cartPanel`: shows cart lines, totals, edit/remove; persists in browser storage for guest flow.
-- `o2p_checkoutForm`: captures customer info, `Pickup_Date_Time__c`, `Special_Instructions__c`; submits Order + OrderItems via Apex/REST; sets status New and `Placed_At__c`.
+- `o2p_checkoutForm`: captures customer info, `Pickup_Date_Time__c`, `Special_Instructions__c`; initiates payment session, creates Order + OrderItems in `Pending Payment` with `Payment_Status__c = Pending` and `Payment_Intent_ID__c`; confirmation step waits for payment success to mark Order `New` and stamp `Placed_At__c`.
 - `o2p_orderSummary`: confirmation view with order number, store, pickup time.
 - `o2p_statusPill`: renders Order status consistently across views.
 
@@ -125,7 +133,7 @@ graph TD
 - Use `@salesforce/user/isGuest` to hide staff controls in shared components.
 - Apex services:
   - `MenuService.getMenu(pricebookId|storeId)`: returns products + prices with effective Pricebook2.
-  - `OrderService.createOrder(payload)`: creates Order + OrderItems, sets status New, `Placed_At__c`, derives `Brand__c`.
+  - `OrderService.createOrder(payload)`: creates Order + OrderItems when payment session starts; sets status `Pending Payment` (or `Draft`), `Payment_Status__c = Pending`, derives `Brand__c`, sets `Payment_Intent_ID__c`.
   - `OrderService.updateStatus(orderId, newStatus)`: enforces allowed transitions and stamps `In_Progress_At__c`, `Ready_At__c`, `Picked_Up_At__c`.
   - `OrderService.listOrders(storeId, filters)`: staff-scoped query by store and status/pickup window.
 - Guard payment fields: only exposed to staff/internal; guest UI should not render payment provider/status.
@@ -133,11 +141,12 @@ graph TD
 
 - Use `Payment_Provider__c` picklist and `Payment_Intent_ID__c` (unique external ID) for reconciliation.
 - `Payment_Status__c` drives fulfillment eligibility; fulfillment proceeds only when `Paid` (or `Authorized` if delayed capture).
-- For guest checkout with external gateway:
-  - Create Order in `Pending` with intent ID when payment session starts.
-  - Update to `Authorized/Paid` via webhook/async callback; set `Payment_Provider__c` and maintain idempotency using `Payment_Intent_ID__c`.
-  - Prevent duplicate orders via uniqueness on intent ID and a small holding window.
-- If supporting cash/manual, allow `Manual / Cash` provider and set status accordingly.
+- Flow alignment:
+  - On payment session creation: create Order with status `Pending Payment` (or `Draft`), `Payment_Status__c = Pending`, and set `Payment_Intent_ID__c`.
+  - On payment success/authorization (redirect or webhook): set Order status `New`, stamp `Placed_At__c`, set `Payment_Status__c` to `Paid` (or `Authorized`) and `Payment_Provider__c`.
+  - On payment failure/expiration: set `Payment_Status__c` to `Failed` or `Canceled` and optionally cancel/void the Order.
+- Prevent duplicates via unique `Payment_Intent_ID__c` and idempotent webhook handling.
+- If supporting cash/manual, allow `Manual / Cash` provider and set status accordingly, bypassing the payment session path.
 
 ## Deployment & Org Setup
 
